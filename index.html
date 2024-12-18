@@ -26,6 +26,15 @@ canvas.height = window.innerHeight;
 let particles = [];
 let userText = 'Happy Birthday!'; // Default text
 
+function parseURLParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const messageParam = urlParams.get('message');
+  if (messageParam) {
+    userText = messageParam;
+  }
+}
+parseURLParams()
+
 class Particle {
 
   constructor(x, y, color, size, speedX, speedY) {
