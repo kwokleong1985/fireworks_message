@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fireworks with Custom Message</title>
+<style>
+body { margin: 0; overflow: hidden; background: #000; }
+canvas { display: block; }
+button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  padding: 10px;
+  font-size: 16px;
+}
+</style>
+</head>
+<body>
+<canvas id="fireworksCanvas"></canvas>
+<button onclick="editMessage()">Edit Text Message</button>
+<script>
+const canvas = document.getElementById('fireworksCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+let particles = [];
+let userText = 'Happy Birthday!'; // Default text
+
+class Particle {
+
+  constructor(x, y, color, size, speedX, speedY) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.size = size;
+    this.speedX = speedX;
+    this.speedY = speedY;
+    this.alpha = 1;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.speedY += 0.05; // Gravity
+    this.alpha -= 0.01; // Fade out
+  }
+
+   draw() {
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.alpha;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+  
+function createFirework() {
+  const x = Math.random() * canvas.width;
+  const y = Math.random() * canvas.height;
+  const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+  const particleCount = 50 + Math.random() * 50;
+
+  for (let i = 0; i < particleCount; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 5 + 2;
+    const speedX = Math.cos(angle) * speed;
+    const speedY = Math.sin(angle) * speed;
+
+    particles.push(new Particle(x, y, color, 2, speedX, speedY));
+  }
+}
+
+function animate() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Subtle trail effect
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    particles[i].draw();
+    if (particles[i].alpha <= 0) {
+      particles.splice(i, 1);
+    }
+  }
+
+  // Draw the user-defined message
+  ctx.font = 'bold 48px sans-serif'; // Adjust font size as needed
+  ctx.fillStyle = 'white'; // Text color
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const textX = canvas.width / 2;
+  const textY = canvas.height / 4; // Position text higher up
+  ctx.fillText(userText, textX, textY);
+  requestAnimationFrame(animate);
+}
+
+function editMessage() {
+  const newText = prompt("Enter your message:", userText);
+  if (newText !== null) {
+    userText = newText;
+  }
+}
+setInterval(createFirework, 250); // Create 4 fireworks every second
+animate();
+window.addEventListener('resize', function() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+</script>
+</body>
+</html>
